@@ -91,10 +91,8 @@ function createData(numStores, numCustomers) {
 }
 
 function generate() {
-  var numStores = document.getElementById("numStores").value
-  var numCustomers = document.getElementById("numCustomers").value
-
-  document.getElementById('output').innerHTML = createData(numStores, numCustomers)
+  createData(document.getElementById("numStores").value,
+             document.getElementById("numCustomers").value)
 }
 
 var start = 'INSERT INTO '
