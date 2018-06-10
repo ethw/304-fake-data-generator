@@ -90,6 +90,13 @@ function createData(numStores, numCustomers) {
   return sqlBuffer
 }
 
+function generate() {
+  var numStores = document.getElementById("numStores").value
+  var numCustomers = document.getElementById("numCustomers").value
+
+  document.getElementById('output').innerHTML = createData(numStores, numCustomers)
+}
+
 var start = 'INSERT INTO '
 var middle = ' VALUES ('
 var end = ');\n'
@@ -137,7 +144,7 @@ function download(filename, text) {
 // Data for random attribute generation
 var adjectives = ['Attractive', 'Beautiful', 'Chubby', 'Dazzling', 'Magnificent', 'Plump', 'Black', 'Icy', 'Red', 'Best', 'Delicious', 'Jolly', 'Wonderful', 'Mysterious', 'Succulent', 'Spicy', 'Natural', 'Fresh', 'Traditional', 'Healthy', 'Soft', 'Hot', 'Cold', 'Enjoyable', 'Amazing', 'Magical', 'Toasted']
 var typesOfRestaurants = ['Pizzeria', 'Pancake House', 'Taco City', 'Sandwichery', 'Creamery', 'Boulangerie', 'Patisserie', 'Brasserie', 'Barbecue', 'Tavern', 'Buffet', 'Cafe', 'Pub', 'Dive Bar']
-var names = ['Mary', 'Patricia', 'Linda', 'Barbara', 'Jennifer', 'Maria', 'Susan', 'James', 'John', 'Robert', 'Michael', 'William', 'David', 'Kelly', 'Cindy', 'Gary', 'Robyn', 'Hannah', 'Bill', 'Joey', 'Han', 'Harrison']
+var names = ['Mary', 'Patricia', 'Linda', 'Barbara', 'Jennifer', 'Maria', 'Susan', 'James', 'John', 'Robert', 'Michael', 'William', 'David', 'Kelly', 'Cindy', 'Gary', 'Robyn', 'Hannah', 'Bill', 'Joey', 'Han', 'Harrison', 'Leah', 'Elon', 'Jeff', 'Elle', 'Christie', 'Roy', 'Violet', 'Lydia', 'Kim', 'Ross', 'Tim', 'Bob', 'Alicia', 'Nicki', 'Dan', 'Jan', 'Carleton', 'Smith', 'Winnie', 'Lena', 'Drake', 'Adam', 'Davis', 'Emily', 'Kyra', 'Sebastian', 'Percy', 'Chris', 'Glenn', 'Alan', 'Anne', 'George', 'Kyle', 'Lee', 'Wong', 'Timothy', 'Faye', 'Horton', 'Izuku', 'Whitney', 'Anderson', 'Beckett', 'Bonnibel', 'Taylor', 'Jackson', 'Lincoln', 'Cohen', 'Yuki', 'Yuri', 'Rey', 'Sara']
 var foodTypes = ['Burger', 'Curry', 'Fries', 'Taco', 'Salad', 'Burrito', 'Sandwich', 'Sushi', 'Ice Cream', 'Pulled Pork Sandwich', 'Coffee', 'Meatballs', 'Pasta', 'Calzone', 'Cake', 'Bagel', 'Milkshake', 'Chicken Strips']
 var streetNames = ['Granville', 'Arbutus', 'Davie', 'Broadway', 'Cambie', 'Marine', 'Yew', 'Burrard', 'Main', 'Thurlow', 'Sasamat', 'Blanca', 'Alma', 'Trafalgar', 'Discovery', 'Pender', 'Mainland', 'Hamilton', 'Pacific', 'Beach', 'Eastdown', 'Gibbins', 'Highland', 'Carmel', 'Upland']
 var streetTypes = ['Dr', 'St', 'Cr', 'Way', 'Lane', 'Grove', 'Place', 'Terrace', 'Hill', 'Square', 'Junction', 'Heights', 'Gardens', 'Creek', 'Center', 'Canyon', 'Avenue', 'Boulevard', 'Alley']
