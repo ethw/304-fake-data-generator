@@ -90,7 +90,7 @@ function createData(numStores, numCustomers) {
   return sqlBuffer
 }
 
-function generate() {
+function htmlGenerate() {
   var numStores = document.getElementById('numStores').value
   var numCustomers = document.getElementById('numCustomers').value
 
