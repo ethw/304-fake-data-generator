@@ -1,7 +1,7 @@
 // Application entry point
 // Call this function to create fake data
 function createData(numStores, numCustomers) {
-  var sqlBuffer  = ''
+  var sqlBuffer = []
 
   var cids = []
   var sids = []
@@ -14,7 +14,7 @@ function createData(numStores, numCustomers) {
     fids.set(sid, [])
 
     // Generating FoodItems
-    var foodBuffer = ''
+    var foodBuffer = []
     var numItemsPerStore = randomFrom1To(10)
     rangeOfSize(numItemsPerStore).forEach(() => {
       var foodType = randomFrom(foodTypes)
@@ -22,8 +22,8 @@ function createData(numStores, numCustomers) {
       var description = '"' + 'The tastiest ' + foodType + ' possible' + '"'
       var fid = newID()
       fids.get(sid).push(fid)
-      foodBuffer += wrapAsInsert('FoodItemOffers1', title, description)
-      foodBuffer += wrapAsInsert('FoodItemOffers2', fid, sid, title)
+      foodBuffer.push(wrapAsInsert('FoodItemOffers1', title, description))
+      foodBuffer.push(wrapAsInsert('FoodItemOffers2', fid, sid, title))
     })
 
     // Generate Manager
@@ -35,17 +35,17 @@ function createData(numStores, numCustomers) {
     var smUsername = '"' + firstName + smid + '"'
     var smAddress = '"' + randomStreet() + '"'
 
-    sqlBuffer  += wrapAsInsert('StoreManager', smid, sid, smUsername, smPassword, smName, smAddress)
+    sqlBuffer.push(wrapAsInsert('StoreManager', smid, sid, smUsername, smPassword, smName, smAddress))
 
     // Generating Store and finishing up
     var sName = '"' + 'The ' + randomFrom(adjectives) + ' ' + randomFrom(typesOfRestaurants) + '"'
     var popularItem = fids.get(sid)[fids.get(sid).length - 1]
     var sAddress = '"' + randomStreet() + '"'
 
-    sqlBuffer  += wrapAsInsert('Store1', sName, popularItem)
-    sqlBuffer  += wrapAsInsert('Store2', sid, smid, sName, sAddress)
+    sqlBuffer.push(wrapAsInsert('Store1', sName, popularItem))
+    sqlBuffer.push(wrapAsInsert('Store2', sid, smid, sName, sAddress))
 
-    sqlBuffer  += foodBuffer
+    sqlBuffer.push(foodBuffer.join(''))
   })
 
   // Generate customers
@@ -59,7 +59,7 @@ function createData(numStores, numCustomers) {
     var name = '"' + firstName + ' ' + lastName + '"'
     var address = '"' + randomStreet() + '"'
 
-    sqlBuffer  += wrapAsInsert('Customer', cid, username, password, name, address)
+    sqlBuffer.push(wrapAsInsert('Customer', cid, username, password, name, address))
   })
 
   // Generate orders and messages
@@ -69,33 +69,36 @@ function createData(numStores, numCustomers) {
       var oid = newID()
       var cid = randomFrom(cids)
       var time = randomTime()
-      sqlBuffer  += wrapAsInsert('OrderFullfillsAndPlaces', oid, sid, cid, time)
+      sqlBuffer.push(wrapAsInsert('OrderFullfillsAndPlaces', oid, sid, cid, time))
 
       var numItems = randomFrom1To(5)
       rangeOfSize(numItems).forEach(() => {
-        sqlBuffer  += wrapAsInsert('Contains', oid, randomFrom(fids.get(sid)))
+        sqlBuffer.push(wrapAsInsert('Contains', oid, randomFrom(fids.get(sid))))
       })
 
       var mid = newID()
       var subject = '"' + 'Your order #' + oid.toString() + '"'
       var content = '"' + 'Your order is on its way. Enjoy!' + '"'
-      sqlBuffer  += wrapAsInsert('MessageSendsAndReceives', mid, sid, cid, subject, content, time)
+      sqlBuffer.push(wrapAsInsert('MessageSendsAndReceives', mid, sid, cid, subject, content, time))
     })
   })
 
+  let sql = sqlBuffer.join('')
+
   try {
-    download('fakeData-' + numStores + 'stores-'+ numCustomers + 'customers.sql', sqlBuffer)
+    download('fakeData-' + numStores + 'stores-'+ numCustomers + 'customers.sql', sql)
   } catch {}
 
-  return sqlBuffer
+  return sql
 }
 
 function htmlGenerate() {
-  var numStores = document.getElementById('numStores').value
-  var numCustomers = document.getElementById('numCustomers').value
+  var numStores = Number(document.getElementById('numStores').value)
+  var numCustomers = Number(document.getElementById('numCustomers').value)
 
   if (numStores > 0 && numCustomers > 0) {
-    document.getElementById('output').innerHTML = createData(numStores, numCustomers)
+    let res = createData(numStores, numCustomers)
+    document.getElementById('output').innerHTML = res
   } else {
     var warning = document.getElementById('warning')
     warning.style.display = "inline"
@@ -137,13 +140,13 @@ function rangeOfSize(n) {
 }
 
 function download(filename, text) {
-  var element = document.createElement('a');
-  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-  element.setAttribute('download', filename);
-  element.style.display = 'none';
-  document.body.appendChild(element);
-  element.click();
-  document.body.removeChild(element);
+  var element = document.createElement('a')
+  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text))
+  element.setAttribute('download', filename)
+  element.style.display = 'none'
+  document.body.appendChild(element)
+  element.click()
+  document.body.removeChild(element)
 }
 
 // Data for random attribute generation
