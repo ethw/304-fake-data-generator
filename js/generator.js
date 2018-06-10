@@ -91,8 +91,15 @@ function createData(numStores, numCustomers) {
 }
 
 function generate() {
-  createData(document.getElementById("numStores").value,
-             document.getElementById("numCustomers").value)
+  var numStores = document.getElementById('numStores').value
+  var numCustomers = document.getElementById('numCustomers').value
+
+  if (numStores > 0 && numCustomers > 0) {
+    document.getElementById('output').innerHTML = createData(numStores, numCustomers)
+  } else {
+    var warning = document.getElementById('warning')
+    warning.style.display = "inline"
+  }
 }
 
 var start = 'INSERT INTO '
