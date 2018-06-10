@@ -1,46 +1,46 @@
 // Application entry point
 // Call this function to create fake data
-function createData(numStores, numCustomers) {
-  var sqlBuffer = []
+function createData(numStores, numCustomers, downloadOutput) {
+  let sqlBuffer = []
 
-  var cids = []
-  var sids = []
-  var fids = new Map()
+  let cids = []
+  let sids = []
+  let fids = new Map()
 
   // Generate Stores, StoreManagers, and randomly between 0-10 items per store
   rangeOfSize(numStores).forEach(() => {
-    var sid = newID()
+    let sid = newID()
     sids.push(sid)
     fids.set(sid, [])
 
     // Generating FoodItems
-    var foodBuffer = []
-    var numItemsPerStore = randomFrom1To(10)
+    let foodBuffer = []
+    let numItemsPerStore = randomFrom1To(10)
     rangeOfSize(numItemsPerStore).forEach(() => {
-      var foodType = randomFrom(foodTypes)
-      var title = '"' + randomFrom(adjectives) + ' ' + foodType + '"'
-      var description = '"' + 'The tastiest ' + foodType + ' possible' + '"'
-      var fid = newID()
+      let foodType = randomFrom(foodTypes)
+      let title = '"' + randomFrom(adjectives) + ' ' + foodType + '"'
+      let description = '"' + 'The tastiest ' + foodType + ' possible' + '"'
+      let fid = newID()
       fids.get(sid).push(fid)
       foodBuffer.push(wrapAsInsert('FoodItemOffers1', title, description))
       foodBuffer.push(wrapAsInsert('FoodItemOffers2', fid, sid, title))
     })
 
     // Generate Manager
-    var smid = newID()
-    var firstName = randomFrom(names)
-    var lastName = randomFrom(names)
-    var smName = '"' + firstName + ' ' + lastName + '"'
-    var smPassword = '"' + lastName + smid + '"'
-    var smUsername = '"' + firstName + smid + '"'
-    var smAddress = '"' + randomStreet() + '"'
+    let smid = newID()
+    let firstName = randomFrom(names)
+    let lastName = randomFrom(names)
+    let smName = '"' + firstName + ' ' + lastName + '"'
+    let smPassword = '"' + lastName + smid + '"'
+    let smUsername = '"' + firstName + smid + '"'
+    let smAddress = '"' + randomStreet() + '"'
 
     sqlBuffer.push(wrapAsInsert('StoreManager', smid, sid, smUsername, smPassword, smName, smAddress))
 
     // Generating Store and finishing up
-    var sName = '"' + 'The ' + randomFrom(adjectives) + ' ' + randomFrom(typesOfRestaurants) + '"'
-    var popularItem = fids.get(sid)[fids.get(sid).length - 1]
-    var sAddress = '"' + randomStreet() + '"'
+    let sName = '"' + 'The ' + randomFrom(adjectives) + ' ' + randomFrom(typesOfRestaurants) + '"'
+    let popularItem = fids.get(sid)[fids.get(sid).length - 1]
+    let sAddress = '"' + randomStreet() + '"'
 
     sqlBuffer.push(wrapAsInsert('Store1', sName, popularItem))
     sqlBuffer.push(wrapAsInsert('Store2', sid, smid, sName, sAddress))
@@ -50,35 +50,35 @@ function createData(numStores, numCustomers) {
 
   // Generate customers
   rangeOfSize(numCustomers).forEach(() => {
-    var cid = newID()
+    let cid = newID()
     cids.push(cid)
-    var firstName = randomFrom(names)
-    var lastName = randomFrom(names)
-    var username = '"' + firstName + cid + '"'
-    var password = '"' + lastName + cid + '"'
-    var name = '"' + firstName + ' ' + lastName + '"'
-    var address = '"' + randomStreet() + '"'
+    let firstName = randomFrom(names)
+    let lastName = randomFrom(names)
+    let username = '"' + firstName + cid + '"'
+    let password = '"' + lastName + cid + '"'
+    let name = '"' + firstName + ' ' + lastName + '"'
+    let address = '"' + randomStreet() + '"'
 
     sqlBuffer.push(wrapAsInsert('Customer', cid, username, password, name, address))
   })
 
   // Generate orders and messages
   sids.forEach(sid => {
-    var numOrders = randomFrom1To(10)
+    let numOrders = randomFrom1To(10)
     rangeOfSize(numOrders).forEach(() => {
-      var oid = newID()
-      var cid = randomFrom(cids)
-      var time = randomTime()
+      let oid = newID()
+      let cid = randomFrom(cids)
+      let time = randomTime()
       sqlBuffer.push(wrapAsInsert('OrderFullfillsAndPlaces', oid, sid, cid, time))
 
-      var numItems = randomFrom1To(5)
+      let numItems = randomFrom1To(5)
       rangeOfSize(numItems).forEach(() => {
         sqlBuffer.push(wrapAsInsert('Contains', oid, randomFrom(fids.get(sid))))
       })
 
-      var mid = newID()
-      var subject = '"' + 'Your order #' + oid.toString() + '"'
-      var content = '"' + 'Your order is on its way. Enjoy!' + '"'
+      let mid = newID()
+      let subject = '"' + 'Your order #' + oid.toString() + '"'
+      let content = '"' + 'Your order is on its way. Enjoy!' + '"'
       sqlBuffer.push(wrapAsInsert('MessageSendsAndReceives', mid, sid, cid, subject, content, time))
     })
   })
@@ -86,33 +86,32 @@ function createData(numStores, numCustomers) {
   let sql = sqlBuffer.join('')
 
   try {
-    download('fakeData-' + numStores + 'stores-'+ numCustomers + 'customers.sql', sql)
+    if (downloadOutput || downloadOutput === undefined) {
+      download('fakeData-' + numStores + 'stores-'+ numCustomers + 'customers.sql', sql)
+    }
   } catch {}
 
   return sql
 }
 
 function htmlGenerate() {
-  var numStores = Number(document.getElementById('numStores').value)
-  var numCustomers = Number(document.getElementById('numCustomers').value)
+  let numStores = Number(document.getElementById('numStores').value)
+  let numCustomers = Number(document.getElementById('numCustomers').value)
+  let downloadOuput = document.getElementById('downloadOutput').checked
 
   if (numStores > 0 && numCustomers > 0) {
-    let res = createData(numStores, numCustomers)
+    let res = createData(numStores, numCustomers, downloadOuput)
     document.getElementById('output').innerHTML = res
   } else {
-    var warning = document.getElementById('warning')
     warning.style.display = "inline"
   }
 }
 
-var start = 'INSERT INTO '
-var middle = ' VALUES ('
-var end = ');\n'
 function wrapAsInsert(tableName, ...values) {
-  return start + tableName + middle + values.join(',') + end
+  return 'INSERT INTO ' + tableName + ' VALUES (' + values.join(',') + ');\n'
 }
 
-var id = 1
+let id = 1
 function newID() {
   return id++
 }
@@ -130,8 +129,8 @@ function randomFrom1To(n) {
 }
 
 function randomTime() {
-  var baseTime = (new Date).getTime()
-  var modifier = randomFrom1To(1000000)
+  let baseTime = (new Date).getTime()
+  let modifier = randomFrom1To(1000000)
   return randomFrom1To(10) < 5 ? baseTime + modifier : baseTime - modifier
 }
 
@@ -140,7 +139,7 @@ function rangeOfSize(n) {
 }
 
 function download(filename, text) {
-  var element = document.createElement('a')
+  let element = document.createElement('a')
   element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text))
   element.setAttribute('download', filename)
   element.style.display = 'none'
@@ -150,9 +149,9 @@ function download(filename, text) {
 }
 
 // Data for random attribute generation
-var adjectives = ['Attractive', 'Beautiful', 'Chubby', 'Dazzling', 'Magnificent', 'Plump', 'Black', 'Icy', 'Red', 'Best', 'Delicious', 'Jolly', 'Wonderful', 'Mysterious', 'Succulent', 'Spicy', 'Natural', 'Fresh', 'Traditional', 'Healthy', 'Soft', 'Hot', 'Cold', 'Enjoyable', 'Amazing', 'Magical', 'Toasted']
-var typesOfRestaurants = ['Pizzeria', 'Pancake House', 'Taco City', 'Sandwichery', 'Creamery', 'Boulangerie', 'Patisserie', 'Brasserie', 'Barbecue', 'Tavern', 'Buffet', 'Cafe', 'Pub', 'Dive Bar']
-var names = ['Mary', 'Patricia', 'Linda', 'Barbara', 'Jennifer', 'Maria', 'Susan', 'James', 'John', 'Robert', 'Michael', 'William', 'David', 'Kelly', 'Cindy', 'Gary', 'Robyn', 'Hannah', 'Bill', 'Joey', 'Han', 'Harrison', 'Leah', 'Elon', 'Jeff', 'Elle', 'Christie', 'Roy', 'Violet', 'Lydia', 'Kim', 'Ross', 'Tim', 'Bob', 'Alicia', 'Nicki', 'Dan', 'Jan', 'Carleton', 'Smith', 'Winnie', 'Lena', 'Drake', 'Adam', 'Davis', 'Emily', 'Kyra', 'Sebastian', 'Percy', 'Chris', 'Glenn', 'Alan', 'Anne', 'George', 'Kyle', 'Lee', 'Wong', 'Timothy', 'Faye', 'Horton', 'Izuku', 'Whitney', 'Anderson', 'Beckett', 'Bonnibel', 'Taylor', 'Jackson', 'Lincoln', 'Cohen', 'Yuki', 'Yuri', 'Rey', 'Sara']
-var foodTypes = ['Burger', 'Curry', 'Fries', 'Taco', 'Salad', 'Burrito', 'Sandwich', 'Sushi', 'Ice Cream', 'Pulled Pork Sandwich', 'Coffee', 'Meatballs', 'Pasta', 'Calzone', 'Cake', 'Bagel', 'Milkshake', 'Chicken Strips']
-var streetNames = ['Granville', 'Arbutus', 'Davie', 'Broadway', 'Cambie', 'Marine', 'Yew', 'Burrard', 'Main', 'Thurlow', 'Sasamat', 'Blanca', 'Alma', 'Trafalgar', 'Discovery', 'Pender', 'Mainland', 'Hamilton', 'Pacific', 'Beach', 'Eastdown', 'Gibbins', 'Highland', 'Carmel', 'Upland']
-var streetTypes = ['Dr', 'St', 'Cr', 'Way', 'Lane', 'Grove', 'Place', 'Terrace', 'Hill', 'Square', 'Junction', 'Heights', 'Gardens', 'Creek', 'Center', 'Canyon', 'Avenue', 'Boulevard', 'Alley']
+let adjectives = ['Attractive', 'Beautiful', 'Chubby', 'Dazzling', 'Magnificent', 'Plump', 'Black', 'Icy', 'Red', 'Best', 'Delicious', 'Jolly', 'Wonderful', 'Mysterious', 'Succulent', 'Spicy', 'Natural', 'Fresh', 'Traditional', 'Healthy', 'Soft', 'Hot', 'Cold', 'Enjoyable', 'Amazing', 'Magical', 'Toasted']
+let typesOfRestaurants = ['Pizzeria', 'Pancake House', 'Taco City', 'Sandwichery', 'Creamery', 'Boulangerie', 'Patisserie', 'Brasserie', 'Barbecue', 'Tavern', 'Buffet', 'Cafe', 'Pub', 'Dive Bar']
+let names = ['Mary', 'Patricia', 'Linda', 'Barbara', 'Jennifer', 'Maria', 'Susan', 'James', 'John', 'Robert', 'Michael', 'William', 'David', 'Kelly', 'Cindy', 'Gary', 'Robyn', 'Hannah', 'Bill', 'Joey', 'Han', 'Harrison', 'Leah', 'Elon', 'Jeff', 'Elle', 'Christie', 'Roy', 'Violet', 'Lydia', 'Kim', 'Ross', 'Tim', 'Bob', 'Alicia', 'Nicki', 'Dan', 'Jan', 'Carleton', 'Smith', 'Winnie', 'Lena', 'Drake', 'Adam', 'Davis', 'Emily', 'Kyra', 'Sebastian', 'Percy', 'Chris', 'Glenn', 'Alan', 'Anne', 'George', 'Kyle', 'Lee', 'Wong', 'Timothy', 'Faye', 'Horton', 'Izuku', 'Whitney', 'Anderson', 'Beckett', 'Bonnibel', 'Taylor', 'Jackson', 'Lincoln', 'Cohen', 'Yuki', 'Yuri', 'Rey', 'Sara']
+let foodTypes = ['Burger', 'Curry', 'Fries', 'Taco', 'Salad', 'Burrito', 'Sandwich', 'Sushi', 'Ice Cream', 'Pulled Pork Sandwich', 'Coffee', 'Meatballs', 'Pasta', 'Calzone', 'Cake', 'Bagel', 'Milkshake', 'Chicken Strips']
+let streetNames = ['Granville', 'Arbutus', 'Davie', 'Broadway', 'Cambie', 'Marine', 'Yew', 'Burrard', 'Main', 'Thurlow', 'Sasamat', 'Blanca', 'Alma', 'Trafalgar', 'Discovery', 'Pender', 'Mainland', 'Hamilton', 'Pacific', 'Beach', 'Eastdown', 'Gibbins', 'Highland', 'Carmel', 'Upland']
+let streetTypes = ['Dr', 'St', 'Cr', 'Way', 'Lane', 'Grove', 'Place', 'Terrace', 'Hill', 'Square', 'Junction', 'Heights', 'Gardens', 'Creek', 'Center', 'Canyon', 'Avenue', 'Bouleletd', 'Alley']

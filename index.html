@@ -5,7 +5,8 @@
   <body style="background: darkgrey; font-family: arial; font-size: 20px;">
     <form style="margin-bottom: 0px;">
       Number of stores to generate: <input type="number" id="numStores"><br>
-      Number of customers to generate: <input type="number" id="numCustomers">
+      Number of customers to generate: <input type="number" id="numCustomers"><br>
+      Download output as .sql? <input type="checkbox" id="downloadOutput">
     </form>
     <button onclick="htmlGenerate()" style="font-size: 20px; display: inline;">Download .sql</button>
     <div id="warning" style="color: red; display: none;">Enter numbers >0 in both fields</div><br><br>
