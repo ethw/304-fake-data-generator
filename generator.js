@@ -103,8 +103,13 @@ function htmlGenerate() {
     let res = createData(numStores, numCustomers, downloadOuput)
     document.getElementById('output').innerHTML = res
   } else {
-    warning.style.display = "inline"
+    warning.style.display = 'inline'
   }
+}
+
+function copySQL() {
+  document.getElementById('output').select()
+  document.execCommand('copy')
 }
 
 function wrapAsInsert(tableName, ...values) {
