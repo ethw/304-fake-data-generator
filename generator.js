@@ -90,7 +90,7 @@ function createData(numStores, numCustomers, downloadOutput) {
   try {
     if (downloadOutput || downloadOutput === undefined) {
       // download('fakeData-' + numStores + 's'+ numCustomers + 'c.sql', sql)
-      download('pop.sql', sql)
+      download('populate.sql', sql)
     }
   } catch {}
 
