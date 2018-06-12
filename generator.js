@@ -9,23 +9,6 @@ function createData(numStores, numCustomers, downloadOutput) {
 
   // Generate Stores, StoreManagers, and randomly between 0-10 items per store
   rangeOfSize(numStores).forEach(() => {
-    let sid = newID()
-    sids.push(sid)
-    fids.set(sid, [])
-
-    // Generating FoodItems
-    let foodBuffer = []
-    let numItemsPerStore = randomFrom1To(10)
-    rangeOfSize(numItemsPerStore).forEach(() => {
-      let foodType = randomFrom(foodTypes)
-      let title = wrapQuotes(randomFrom(adjectives) + ' ' + foodType)
-      let description = wrapQuotes('The tastiest ' + foodType + ' possible')
-      let fid = newID()
-      fids.get(sid).push(fid)
-      foodBuffer.push(wrapAsInsert('FoodItemOffers1', title, description))
-      foodBuffer.push(wrapAsInsert('FoodItemOffers2', fid, sid, title))
-    })
-
     // Generate Manager
     let smid = newID()
     let firstName = randomFrom(names)
@@ -34,16 +17,30 @@ function createData(numStores, numCustomers, downloadOutput) {
     let smPassword = wrapQuotes(randomFrom1To(10000) + lastName)
     let smUsername = wrapQuotes(firstName + randomFrom1To(10000))
     let smAddress = randomStreet()
+    sqlBuffer.push(wrapAsInsert('StoreManager', smid, smUsername, smPassword, smName, smAddress))
 
-    sqlBuffer.push(wrapAsInsert('StoreManager', smid, sid, smUsername, smPassword, smName, smAddress))
-
-    // Generating Store and finishing up
-    let sName = wrapQuotes('The ' + randomFrom(adjectives) + ' ' + randomFrom(typesOfRestaurants))
-    let popularItem = fids.get(sid)[fids.get(sid).length - 1]
+    // Generate Store
+    let sid = newID()
+    sids.push(sid)
+    fids.set(sid, [])
+    let sName = storeName()
+    let popularItem = newID()
     let sAddress = randomStreet()
-
-    sqlBuffer.push(wrapAsInsert('Store1', sName, popularItem))
     sqlBuffer.push(wrapAsInsert('Store2', sid, smid, sName, sAddress))
+    sqlBuffer.push(wrapAsInsert('Store1', sName, popularItem))
+
+    // Generating FoodItems
+    let foodBuffer = []
+    let numItemsPerStore = randomFrom1To(10)
+    rangeOfSize(numItemsPerStore).forEach(i => {
+      let foodType = randomFrom(foodTypes)
+      let title = foodTitle(foodType)
+      let description = wrapQuotes('The tastiest ' + foodType + ' possible')
+      let fid = i == 0 ? popularItem : newID()
+      fids.get(sid).push(fid)
+      foodBuffer.push(wrapAsInsert('FoodItemOffers2', fid, sid, title))
+      foodBuffer.push(wrapAsInsert('FoodItemOffers1', title, description))
+    })
 
     sqlBuffer.push(foodBuffer.join(''))
   })
@@ -72,8 +69,13 @@ function createData(numStores, numCustomers, downloadOutput) {
       sqlBuffer.push(wrapAsInsert('OrderFullfillsAndPlaces', oid, sid, cid, time))
 
       let numItems = randomFrom1To(5)
+      let usedItems = new Set()
       rangeOfSize(numItems).forEach(() => {
-        sqlBuffer.push(wrapAsInsert('Contains', oid, randomFrom(fids.get(sid))))
+        let orderItem = randomFrom(fids.get(sid))
+        if (!usedItems.has(orderItem)) {
+          usedItems.add(orderItem)
+          sqlBuffer.push(wrapAsInsert('Contains', oid, orderItem))
+        }
       })
 
       let mid = newID()
@@ -87,7 +89,8 @@ function createData(numStores, numCustomers, downloadOutput) {
 
   try {
     if (downloadOutput || downloadOutput === undefined) {
-      download('fakeData-' + numStores + 's'+ numCustomers + 'c.sql', sql)
+      // download('fakeData-' + numStores + 's'+ numCustomers + 'c.sql', sql)
+      download('pop.sql', sql)
     }
   } catch {}
 
@@ -120,10 +123,28 @@ function wrapQuotes(toWrap) {
   return "'" + toWrap + "'"
 }
 
+let usedTitles = new Set()
+function foodTitle(foodType) {
+  let title = wrapQuotes(randomFrom(adjectives) + ' ' + foodType)
+  while (usedTitles.has(title)) title = wrapQuotes(randomFrom(adjectives) + ' ' + foodType)
+  usedTitles.add(title)
+  return title
+}
+
+let usedSNames = new Set()
+function storeName() {
+  let sName = wrapQuotes('The ' + randomFrom(adjectives) + ' ' + randomFrom(typesOfRestaurants))
+  while (usedSNames.has(sName)) sName = wrapQuotes('The ' + randomFrom(adjectives) + ' ' + randomFrom(typesOfRestaurants))
+  usedSNames.add(sName)
+  return sName
+}
+
 let usedIDs = new Set()
 function newID() {
   let id = randomFrom1To(1000000)
-  return usedIDs.has(id) ? newID() : id
+  while (usedIDs.has(id)) id = randomFrom1To(1000000)
+  usedIDs.add(id)
+  return id
 }
 
 function randomStreet() {
