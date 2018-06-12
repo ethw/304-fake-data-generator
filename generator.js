@@ -40,7 +40,7 @@ function createData(numStores, numCustomers, downloadOutput) {
     // Generating Store and finishing up
     let sName = wrapQuotes('The ' + randomFrom(adjectives) + ' ' + randomFrom(typesOfRestaurants))
     let popularItem = fids.get(sid)[fids.get(sid).length - 1]
-    let sAddress = wrapQuotes(randomStreet())
+    let sAddress = randomStreet()
 
     sqlBuffer.push(wrapAsInsert('Store1', sName, popularItem))
     sqlBuffer.push(wrapAsInsert('Store2', sid, smid, sName, sAddress))
@@ -57,7 +57,7 @@ function createData(numStores, numCustomers, downloadOutput) {
     let username = wrapQuotes(firstName + randomFrom1To(10000))
     let password = wrapQuotes(randomFrom1To(10000) + lastName)
     let name = wrapQuotes(firstName + ' ' + lastName)
-    let address = wrapQuotes(randomStreet())
+    let address = randomStreet()
 
     sqlBuffer.push(wrapAsInsert('Customer', cid, username, password, name, address))
   })
@@ -117,7 +117,7 @@ function wrapAsInsert(tableName, ...values) {
 }
 
 function wrapQuotes(toWrap) {
-  return '"' + toWrap + '"'
+  return "'" + toWrap + "'"
 }
 
 let usedIDs = new Set()
