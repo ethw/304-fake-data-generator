@@ -116,9 +116,11 @@ function wrapAsInsert(tableName, ...values) {
   return 'INSERT INTO ' + tableName + ' VALUES (' + values.join(',') + ');\n'
 }
 
-let id = 1
+let usedIDs = new Set()
 function newID() {
-  return id++
+  let id = randomFrom1To(1000000)
+  if (usedIDs.has(id)) return newID()
+  else return id
 }
 
 function randomStreet() {
