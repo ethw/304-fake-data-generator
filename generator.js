@@ -18,8 +18,8 @@ function createData(numStores, numCustomers, downloadOutput) {
     let numItemsPerStore = randomFrom1To(10)
     rangeOfSize(numItemsPerStore).forEach(() => {
       let foodType = randomFrom(foodTypes)
-      let title = '"' + randomFrom(adjectives) + ' ' + foodType + '"'
-      let description = '"' + 'The tastiest ' + foodType + ' possible' + '"'
+      let title = wrapQuotes(randomFrom(adjectives) + ' ' + foodType)
+      let description = wrapQuotes('The tastiest ' + foodType + ' possible')
       let fid = newID()
       fids.get(sid).push(fid)
       foodBuffer.push(wrapAsInsert('FoodItemOffers1', title, description))
@@ -30,17 +30,17 @@ function createData(numStores, numCustomers, downloadOutput) {
     let smid = newID()
     let firstName = randomFrom(names)
     let lastName = randomFrom(names)
-    let smName = '"' + firstName + ' ' + lastName + '"'
-    let smPassword = '"' + randomFrom1To(10000) + lastName + '"'
-    let smUsername = '"' + firstName + randomFrom1To(10000) + '"'
-    let smAddress = '"' + randomStreet() + '"'
+    let smName = wrapQuotes(firstName + ' ' + lastName)
+    let smPassword = wrapQuotes(randomFrom1To(10000) + lastName)
+    let smUsername = wrapQuotes(firstName + randomFrom1To(10000))
+    let smAddress = randomStreet()
 
     sqlBuffer.push(wrapAsInsert('StoreManager', smid, sid, smUsername, smPassword, smName, smAddress))
 
     // Generating Store and finishing up
-    let sName = '"' + 'The ' + randomFrom(adjectives) + ' ' + randomFrom(typesOfRestaurants) + '"'
+    let sName = wrapQuotes('The ' + randomFrom(adjectives) + ' ' + randomFrom(typesOfRestaurants))
     let popularItem = fids.get(sid)[fids.get(sid).length - 1]
-    let sAddress = '"' + randomStreet() + '"'
+    let sAddress = wrapQuotes(randomStreet())
 
     sqlBuffer.push(wrapAsInsert('Store1', sName, popularItem))
     sqlBuffer.push(wrapAsInsert('Store2', sid, smid, sName, sAddress))
@@ -54,10 +54,10 @@ function createData(numStores, numCustomers, downloadOutput) {
     cids.push(cid)
     let firstName = randomFrom(names)
     let lastName = randomFrom(names)
-    let username = '"' + firstName + randomFrom1To(10000) + '"'
-    let password = '"' + randomFrom1To(10000) + lastName + '"'
-    let name = '"' + firstName + ' ' + lastName + '"'
-    let address = '"' + randomStreet() + '"'
+    let username = wrapQuotes(firstName + randomFrom1To(10000))
+    let password = wrapQuotes(randomFrom1To(10000) + lastName)
+    let name = wrapQuotes(firstName + ' ' + lastName)
+    let address = wrapQuotes(randomStreet())
 
     sqlBuffer.push(wrapAsInsert('Customer', cid, username, password, name, address))
   })
@@ -77,8 +77,8 @@ function createData(numStores, numCustomers, downloadOutput) {
       })
 
       let mid = newID()
-      let subject = '"' + 'Your order #' + oid.toString() + '"'
-      let content = '"' + 'Your order is on its way. Enjoy!' + '"'
+      let subject = wrapQuotes('Your order #' + oid.toString())
+      let content = wrapQuotes('Your order is on its way. Enjoy!')
       sqlBuffer.push(wrapAsInsert('MessageSendsAndReceives', mid, sid, cid, subject, content, time))
     })
   })
@@ -87,7 +87,7 @@ function createData(numStores, numCustomers, downloadOutput) {
 
   try {
     if (downloadOutput || downloadOutput === undefined) {
-      download('fakeData-' + numStores + 'stores-'+ numCustomers + 'customers.sql', sql)
+      download('fakeData-' + numStores + 's'+ numCustomers + 'c', sql)
     }
   } catch {}
 
@@ -116,15 +116,18 @@ function wrapAsInsert(tableName, ...values) {
   return 'INSERT INTO ' + tableName + ' VALUES (' + values.join(',') + ');\n'
 }
 
+function wrapQuotes(toWrap) {
+  return '"' + toWrap + '"'
+}
+
 let usedIDs = new Set()
 function newID() {
   let id = randomFrom1To(1000000)
-  if (usedIDs.has(id)) return newID()
-  else return id
+  return usedIDs.has(id) ? newID() : id
 }
 
 function randomStreet() {
-  return (Math.floor(Math.random() * 1000)).toString() + ' ' + randomFrom(streetNames) + ' ' + randomFrom(streetTypes)
+  return wrapQuotes((Math.floor(Math.random() * 1000)).toString() + ' ' + randomFrom(streetNames) + ' ' + randomFrom(streetTypes))
 }
 
 function randomFrom(array) {
@@ -132,7 +135,7 @@ function randomFrom(array) {
 }
 
 function randomFrom1To(n) {
-  return Math.floor(Math.random() * n + 1)
+  return Math.floor(Math.random() * (n - 1) + 1)
 }
 
 function randomTime() {
