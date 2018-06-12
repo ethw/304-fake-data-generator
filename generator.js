@@ -87,7 +87,7 @@ function createData(numStores, numCustomers, downloadOutput) {
 
   try {
     if (downloadOutput || downloadOutput === undefined) {
-      download('fakeData-' + numStores + 's'+ numCustomers + 'c', sql)
+      download('fakeData-' + numStores + 's'+ numCustomers + 'c.sql', sql)
     }
   } catch {}
 
@@ -100,8 +100,7 @@ function htmlGenerate() {
   let downloadOuput = document.getElementById('downloadOutput').checked
 
   if (numStores > 0 && numCustomers > 0) {
-    let res = createData(numStores, numCustomers, downloadOuput)
-    document.getElementById('output').innerHTML = res
+    document.getElementById('output').innerHTML = createData(numStores, numCustomers, downloadOuput)
     warning.style.display = 'none'
   } else {
     warning.style.display = 'inline'
