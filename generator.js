@@ -102,6 +102,7 @@ function htmlGenerate() {
   if (numStores > 0 && numCustomers > 0) {
     let res = createData(numStores, numCustomers, downloadOuput)
     document.getElementById('output').innerHTML = res
+    warning.style.display = 'none'
   } else {
     warning.style.display = 'inline'
   }
