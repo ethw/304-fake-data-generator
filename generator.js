@@ -31,8 +31,8 @@ function createData(numStores, numCustomers, downloadOutput) {
     let firstName = randomFrom(names)
     let lastName = randomFrom(names)
     let smName = '"' + firstName + ' ' + lastName + '"'
-    let smPassword = '"' + lastName + smid + '"'
-    let smUsername = '"' + firstName + smid + '"'
+    let smPassword = '"' + randomFrom1To(10000) + lastName + '"'
+    let smUsername = '"' + firstName + randomFrom1To(10000) + '"'
     let smAddress = '"' + randomStreet() + '"'
 
     sqlBuffer.push(wrapAsInsert('StoreManager', smid, sid, smUsername, smPassword, smName, smAddress))
@@ -54,8 +54,8 @@ function createData(numStores, numCustomers, downloadOutput) {
     cids.push(cid)
     let firstName = randomFrom(names)
     let lastName = randomFrom(names)
-    let username = '"' + firstName + cid + '"'
-    let password = '"' + lastName + cid + '"'
+    let username = '"' + firstName + randomFrom1To(10000) + '"'
+    let password = '"' + randomFrom1To(10000) + lastName + '"'
     let name = '"' + firstName + ' ' + lastName + '"'
     let address = '"' + randomStreet() + '"'
 
