@@ -94,6 +94,8 @@ function createData(numStores, numCustomers, downloadOutput) {
     }
   } catch {}
 
+  resetGlobals()
+
   return sql
 }
 
@@ -102,7 +104,7 @@ function htmlGenerate() {
   let numCustomers = Number(document.getElementById('numCustomers').value)
   let downloadOuput = document.getElementById('downloadOutput').checked
 
-  if (numStores > 0 && numCustomers > 0) {
+  if (numStores > 0 && numCustomers > 0  && numStores < 500 && numCustomers < 500) {
     document.getElementById('output').innerHTML = createData(numStores, numCustomers, downloadOuput)
     warning.style.display = 'none'
   } else {
@@ -145,6 +147,12 @@ function newID() {
   while (usedIDs.has(id)) id = randomFrom1To(1000000)
   usedIDs.add(id)
   return id
+}
+
+function resetGlobals() {
+  usedTitles = new Set()
+  usedSNames = new Set()
+  usedIDs = new Set()
 }
 
 function randomStreet() {
