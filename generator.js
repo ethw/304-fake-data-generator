@@ -104,7 +104,7 @@ function htmlGenerate() {
   let numCustomers = Number(document.getElementById('numCustomers').value)
   let downloadOuput = document.getElementById('downloadOutput').checked
 
-  if (numStores > 0 && numCustomers > 0  && numStores < 500 && numCustomers < 500) {
+  if (numStores > 0 && numCustomers > 0) {
     document.getElementById('output').innerHTML = createData(numStores, numCustomers, downloadOuput)
     warning.style.display = 'none'
   } else {
